@@ -1,4 +1,4 @@
-#define VERSION "0.3.0"
+#define VERSION "0.3.1"
 
 //includes
 #include "config.h"
@@ -173,6 +173,9 @@ void setup() {
     serializeJson(networkdata, networkstring);
     if(jConfig["oled"]["active"] == 1 && showDataonOled) {
       oleddata(&sensordata);
+    }
+    if(jConfig["oled"]["active"] == 1 && jConfig["oled"]["always_on"]["active"].as<bool>() == true) {
+    alwaysOnDisplay();
     }
     if(jConfig["network"]["active"] == 1) {
       while(WiFi.status() != WL_CONNECTED) {

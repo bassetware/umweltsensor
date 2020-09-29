@@ -10,7 +10,7 @@ const char PAGE_INFO[] PROGMEM = R"=====(<html>
 		<Strong>Info</strong><br>
 		<table border='0' cellspacing='0' cellpadding='3' style='width:420px'>
 		<colgroup span=2 width='50%'>
-		<tr><td align='right'>Version :</td><td>0.3.0
+		<tr><td align='right'>Version :</td><td>0.3.1
 		</table>
 		<hr>
 	</body>

@@ -21,12 +21,7 @@ void setupSSD1306() {
   }
   else {
     oled_active = true;
-    //Serial.println("OLED active");
     display.clearDisplay();
-    display.display();
-    //display.fillCircle(display.width() / 2, display.height() / 2, 20, SSD1306_WHITE);
-    //display.display();
-    delay(3000);
   }
 }
 
@@ -42,6 +37,27 @@ void showValue(float data, const uint8_t *picture) {
   display.print(value);
   display.drawBitmap(0, 32, picture, 128, 32, 1);
   display.display(); 
+}
+
+void alwaysOnDisplay() {
+    if(jConfig["oled"]["always_on"]["value"].as<String>() == "temp") {
+      showValue(networkdata[jConfig["oled"]["always_on"]["sensor"].as<char*>()][jConfig["oled"]["always_on"]["value"].as<char*>()], thermo_unit);
+    }
+    if(jConfig["oled"]["always_on"]["value"].as<String>() == "hum") {
+      showValue(networkdata[jConfig["oled"]["always_on"]["sensor"].as<char*>()][jConfig["oled"]["always_on"]["value"].as<char*>()], drops_unit);
+    }
+    if(jConfig["oled"]["always_on"]["value"].as<String>() == "pres") {
+      showValue(networkdata[jConfig["oled"]["always_on"]["sensor"].as<char*>()][jConfig["oled"]["always_on"]["value"].as<char*>()], baro_unit);
+    }
+    if(jConfig["oled"]["always_on"]["value"].as<String>() == "pres_sea") {
+      showValue(networkdata[jConfig["oled"]["always_on"]["sensor"].as<char*>()][jConfig["oled"]["always_on"]["value"].as<char*>()], baro_unit);
+    }
+    if(jConfig["oled"]["always_on"]["value"].as<String>() == "CO2") {
+      showValue(networkdata[jConfig["oled"]["always_on"]["sensor"].as<char*>()][jConfig["oled"]["always_on"]["value"].as<char*>()], co2_unit);
+    }
+    if(jConfig["oled"]["always_on"]["value"].as<String>() == "light") {
+      showValue(networkdata[jConfig["oled"]["always_on"]["sensor"].as<char*>()][jConfig["oled"]["always_on"]["value"].as<char*>()], candle_unit);
+    }
 }
 
 void oleddata(sensors *data) {
@@ -125,29 +141,7 @@ if(jConfig["battery"] == 1) {
   delay(jConfig["oled"]["showtime"].as<long>()); 
 }
   display.clearDisplay();
-  display.display();
-  
-  if(jConfig["oled"]["always_on"]["active"].as<bool>() == true) {
-    if(jConfig["oled"]["always_on"]["value"].as<String>() == "temp") {
-      showValue(networkdata[jConfig["oled"]["always_on"]["sensor"].as<char*>()][jConfig["oled"]["always_on"]["value"].as<char*>()], thermo_unit);
-    }
-    if(jConfig["oled"]["always_on"]["value"].as<String>() == "hum") {
-      showValue(networkdata[jConfig["oled"]["always_on"]["sensor"].as<char*>()][jConfig["oled"]["always_on"]["value"].as<char*>()], drops_unit);
-    }
-    if(jConfig["oled"]["always_on"]["value"].as<String>() == "pres") {
-      showValue(networkdata[jConfig["oled"]["always_on"]["sensor"].as<char*>()][jConfig["oled"]["always_on"]["value"].as<char*>()], baro_unit);
-    }
-    if(jConfig["oled"]["always_on"]["value"].as<String>() == "pres_sea") {
-      showValue(networkdata[jConfig["oled"]["always_on"]["sensor"].as<char*>()][jConfig["oled"]["always_on"]["value"].as<char*>()], baro_unit);
-    }
-    if(jConfig["oled"]["always_on"]["value"].as<String>() == "CO2") {
-      showValue(networkdata[jConfig["oled"]["always_on"]["sensor"].as<char*>()][jConfig["oled"]["always_on"]["value"].as<char*>()], co2_unit);
-    }
-    if(jConfig["oled"]["always_on"]["value"].as<String>() == "light") {
-      showValue(networkdata[jConfig["oled"]["always_on"]["sensor"].as<char*>()][jConfig["oled"]["always_on"]["value"].as<char*>()], candle_unit);
-    }
-  }
-  
+  display.display();  
 }
 
 void printmessage(char *message, int delay_ms, boolean centered, int fontsize) {
