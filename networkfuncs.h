@@ -77,6 +77,7 @@ void sendPage(const char *data, int count, const char *type) {
 #include "html/page_hello.h"
 #include "html/page_data.h"
 #include "html/page_config2.h"
+#include "html/page_info.h"
 
 void initWeb() {
   web.on("/", send_hello_html);
@@ -91,7 +92,7 @@ void initWeb() {
 //  web.on("/mode.html", send_mode_html);
 //  web.on("/scripts/mode", send_mode_vals);
 //
-//  web.on("/mqtt.html", send_mqtt_html);
+  web.on("/info.html", send_info_html);
 //  web.on("/scripts/mqtt", send_mqtt_vals);
   
   web.on("/reboot", []() {

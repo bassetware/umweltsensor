@@ -47,7 +47,7 @@ float calcSeaLevel(float temp, float pres) {
 void readbosch(sensors *data) {
   if(jConfig["SensorBosch"]["type"].as<String>() == "bme280") {
     data->bosch_temp = bme.readTemperature();
-    data->bosch_temp += (float)jConfig["SensorBosch"]["temp_offset"];
+    data->bosch_temp -= (float)jConfig["SensorBosch"]["temp_offset"];
     data->bosch_pres = bme.readPressure();
     data->bosch_pres_sea = calcSeaLevel(data->bosch_temp, data->bosch_pres);
     data->bosch_hum = bme.readHumidity();
@@ -55,7 +55,7 @@ void readbosch(sensors *data) {
   if(jConfig["SensorBosch"]["type"].as<String>() == "bme680") {
     bme680.performReading();
     data->bosch_temp = bme680.temperature;
-    data->bosch_temp += (float)jConfig["SensorBosch"]["temp_offset"];
+    data->bosch_temp -= (float)jConfig["SensorBosch"]["temp_offset"];
     data->bosch_pres = bme680.pressure;
     data->bosch_pres_sea = calcSeaLevel(data->bosch_temp, data->bosch_pres);
     data->bosch_hum = bme680.humidity;
