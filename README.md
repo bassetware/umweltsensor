@@ -10,5 +10,5 @@ The configuration is stored inside the SPIFF of the ESP8266. It can be edited wh
 ### Requirenments
 1. You'll need the Arduino IDE with ESP8266 support installed
 2. The following libs have to be installed:
- - ArduinoJson
- - BH1750 [on Github](https://github.com/claws/BH1750)
+ - [ArduinoJson](https://arduinojson.org/)
+ - [BH1750](https://github.com/claws/BH1750)
