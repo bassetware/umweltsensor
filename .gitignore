@@ -4,5 +4,6 @@ backup/
 build/
 co2test/
 g_rkchen/
+*.bin
 icons/
 mhz19/
