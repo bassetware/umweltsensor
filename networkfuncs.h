@@ -93,7 +93,7 @@ void initWeb() {
 //  web.on("/scripts/mode", send_mode_vals);
 //
   web.on("/info.html", send_info_html);
-//  web.on("/scripts/mqtt", send_mqtt_vals);
+  web.on("/scripts/info", send_info_data);
   
   web.on("/reboot", []() {
     send_hello_html();
