@@ -1,4 +1,4 @@
-#define VERSION "0.3.1"
+#define VERSION "0.3.2"
 
 //includes
 #include "config.h"
@@ -145,7 +145,7 @@ void setup() {
     }
     else {
       Serial.println("Show config!");
-      printmessage("Config Mode", 2000, true, 2);
+      printmessage("Konfiguration\n", 2000, true, 1);
     }
   }
 
@@ -224,7 +224,7 @@ void setup() {
       ESP.deepSleep(jConfig["SleepTime"].as<unsigned long>() * 1000000);
     } 
   }
-  else  {
+  if(configMode)  {
     Serial.println("Config Mode enabled");
     char message[64];
     if(jConfig["network"]["active"] == 1) {
@@ -237,13 +237,16 @@ void setup() {
       Serial.println("open AP");
       openAP(); //Open AP and setup webserver do config
       Serial.println("AP open");
-      snprintf(message, sizeof(message), "Im Browser\n%s\nöffnen",  WiFi.hostname().c_str());
+      snprintf(message, sizeof(message), "%s\n\verbinden\n192.168.4.1\naufrufen", AP_NAME);
+    }
+    else {
+      snprintf(message, sizeof(message), "Im Browser\n%s\naufrufen",  WiFi.localIP().toString().c_str());
     }
     initWeb();
     Serial.println(WiFi.localIP());    
     if(jConfig["oled"]["active"] == 1) {
       Serial.println(message);
-      //simplemessage(message, false, 1);
+      simplemessage(message, false, 1);
     }
    }
 }

@@ -13,18 +13,6 @@
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 boolean oled_active;
 
-void setupSSD1306() {
-  boolean status = display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
-  if(!status) {
-    oled_active = false;
-    Serial.println("OLED failure");
-  }
-  else {
-    oled_active = true;
-    display.clearDisplay();
-  }
-}
-
 void showValue(float data, const uint8_t *picture) {
   display.setFont(&FreeSans18pt7b);
   display.setTextColor(SSD1306_WHITE);
@@ -153,9 +141,20 @@ void printmessage(char *message, int delay_ms, boolean centered, int fontsize) {
   int16_t  x1, y1;
   uint16_t w, h;
   if(!centered) {
-    display.getTextBounds(message, 0, 0, &x1, &y1, &w, &h);
-    display.setCursor(0,0);
-    display.print(message); 
+    uint16_t h_old;
+    char *token = strtok(message, "\n");
+    display.getTextBounds(token, 0, 0, &x1, &y1, &w, &h);
+    display.setCursor(0,h);
+    display.print(token);
+    h_old = h;
+    token = strtok(NULL, "\n");
+    while(token != NULL) {
+      display.getTextBounds(token, 0, 0, &x1, &y1, &w, &h);
+      display.setCursor(0,h_old + h + 4);
+      display.print(token);
+      h_old = h_old + h + 4;
+      token = strtok(NULL, "\n");
+    }
   }
   else {
     uint16_t h_old = h;
@@ -167,16 +166,18 @@ void printmessage(char *message, int delay_ms, boolean centered, int fontsize) {
     token = strtok(NULL, "\n");
     while(token != NULL) {
       display.getTextBounds(token, 0, 0, &x1, &y1, &w, &h);
-      display.setCursor((SCREEN_WIDTH / 2) - (w / 2),h_old+h+2);
+      display.setCursor((SCREEN_WIDTH / 2) - (w / 2),h_old+h+4);
       display.print(token);
-      h_old = h_old + h + 2;
+      h_old = h_old + h + 4;
       token = strtok(NULL, "\n");
     }
   }
+  display.display();
   long stop_message = millis() + delay_ms;
   while(stop_message > millis()) {
     yield();
   }
+  
   display.clearDisplay();
   display.display();
 }
@@ -190,9 +191,20 @@ void simplemessage(char *message, boolean centered,int fontsize) {
   int16_t  x1, y1;
   uint16_t w, h;
   if(!centered) {
-    display.getTextBounds(message, 0, 0, 0, 0, &w, &h);
-    display.setCursor(0,0);
-    display.print(message); 
+    uint16_t h_old;
+    char *token = strtok(message, "\n");
+    display.getTextBounds(token, 0, 0, &x1, &y1, &w, &h);
+    display.setCursor(0,h);
+    display.print(token);
+    h_old = h;
+    token = strtok(NULL, "\n");
+    while(token != NULL) {
+      display.getTextBounds(token, 0, 0, &x1, &y1, &w, &h);
+      display.setCursor(0,h_old + h + 4);
+      display.print(token);
+      h_old = h_old + h + 4;
+      token = strtok(NULL, "\n");
+    }
   }
   else {
     uint16_t h_old;
@@ -204,11 +216,24 @@ void simplemessage(char *message, boolean centered,int fontsize) {
     token = strtok(NULL, "\n");
     while(token != NULL) {
       display.getTextBounds(token, 0, 0, &x1, &y1, &w, &h);
-      display.setCursor((SCREEN_WIDTH / 2) - (w / 2),h_old + h+ 2);
+      display.setCursor((SCREEN_WIDTH / 2) - (w / 2),h_old + h+ 4);
       display.print(token);
-      h_old = h_old + h + 2;
+      h_old = h_old + h + 4;
       token = strtok(NULL, "\n");
     }
   }
   display.display();
+}
+
+void setupSSD1306() {
+  boolean status = display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+  if(!status) {
+    oled_active = false;
+    Serial.println("OLED failure");
+  }
+  else {
+    oled_active = true;
+    display.clearDisplay();
+    display.display();
+  }
 }

@@ -10,9 +10,12 @@ const char PAGE_INFO[] PROGMEM = R"=====(<html>
 		<Strong>Info</strong><br>
 		<table border='0' cellspacing='0' cellpadding='3' style='width:420px'>
 		<colgroup span=2 width='50%'>
-		<tr><td align='right'>Version :</td><td>0.3.1
+		<tr><td align='right'>Version :</td><td><div id='version'>N/A</div></td></tr>
 		</table>
 		<hr>
+		<script>
+			setValues('/scripts/info');
+		</script>
 	</body>
 	</html>
 )=====";
@@ -21,7 +24,13 @@ const char PAGE_INFO[] PROGMEM = R"=====(<html>
 
 
 void send_info_html() {
-  sendPage(PAGE_INFO, sizeof(PAGE_INFO), PTYPE_HTML);
+	sendPage(PAGE_INFO, sizeof(PAGE_INFO), PTYPE_HTML);
+}
+
+void send_info_data() {
+	String values = "";
+	values += "version|div|" + (String)VERSION + "\n";
+	web.send(200, PTYPE_PLAIN, values);
 }
 
 
