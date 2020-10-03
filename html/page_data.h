@@ -11,6 +11,14 @@ const char PAGE_DATA_BME280[] PROGMEM = R"====(
 		<tr><td align='right'>Luftfeuchtigkeit :</td><td><div id='bosch_hum'>N/A</div></td></tr>
 )====";
 
+const char PAGE_DATA_BME680[] PROGMEM = R"====(
+		<tr><td align='right'>Temperatur :</td><td><div id='bosch_temp'>N/A</div></td></tr>
+		<tr><td align='right'>Luftdruck :</td><td><div id='bosch_pres'>N/A</div></td></tr>
+		<tr><td align='right'>Luftfeuchtigkeit :</td><td><div id='bosch_hum'>N/A</div></td></tr>
+		<tr><td align='right'>Gas :</td><td><div id='bosch_gas'>N/A</div></td></tr>
+		<tr><td align='right'>IAQ :</td><td><div id='bosch_iaq'>N/A</div></td></tr>
+)====";
+
 const char PAGE_DATA_CCS811[] PROGMEM = R"====(
 		<tr><td align='right'>CO<sub>2</sub> :</td><td><div id='ccs811_co2'>N/A</div></td></tr>
 		<tr><td align='right'>TVOC :</td><td><div id='ccs811_tvoc'>N/A</div></td></tr>
@@ -63,7 +71,8 @@ void send_data_html() {
   }
   
   if(jConfig["SensorBosch"]["active"] == 1) {
-	p_size += sizeof(PAGE_DATA_BME280);
+	  if(jConfig["SensorBosch"]["type"] == "bme280") {p_size += sizeof(PAGE_DATA_BME280);}
+	  if(jConfig["SensorBosch"]["type"] == "bme680") {p_size += sizeof(PAGE_DATA_BME680);}
   }
   
   if(jConfig["SensorBH1750"]["active"] == 1) {
@@ -83,8 +92,14 @@ void send_data_html() {
   buffer_point = buffer_point + szDataTop - 1;
   
   if(jConfig["SensorBosch"]["active"] == 1) {
-  memcpy_P(buffer + buffer_point, PAGE_DATA_BME280, sizeof(PAGE_DATA_BME280));
-  buffer_point = buffer_point + sizeof(PAGE_DATA_BME280) - 1;
+	  if(jConfig["SensorBosch"]["type"] == "bme280") {
+  		memcpy_P(buffer + buffer_point, PAGE_DATA_BME280, sizeof(PAGE_DATA_BME280));
+  		buffer_point = buffer_point + sizeof(PAGE_DATA_BME280) - 1;
+	  }
+	  if(jConfig["SensorBosch"]["type"] == "bme680") {
+  		memcpy_P(buffer + buffer_point, PAGE_DATA_BME680, sizeof(PAGE_DATA_BME680));
+  		buffer_point = buffer_point + sizeof(PAGE_DATA_BME680) - 1;
+	  }
   }
 
   if(jConfig["SensorBH1750"]["active"] == 1) {
@@ -114,9 +129,13 @@ void send_data_vals() {
 	//Serial.println(sending: data.script);
 	String values = "";
 	if(jConfig["SensorBosch"]["active"] == 1) {
-	values += "bosch_temp|div|" + (String)sensordata.bosch_temp +  " °C\n";
-	values += "bosch_pres|div|" + (String)(sensordata.bosch_pres_sea/100) +  " hPa\n";
-	values += "bosch_hum|div|" + (String)sensordata.bosch_hum +  " %\n";
+		values += "bosch_temp|div|" + (String)sensordata.bosch_temp +  " °C\n";
+		values += "bosch_pres|div|" + (String)(sensordata.bosch_pres_sea/100) +  " hPa\n";
+		values += "bosch_hum|div|" + (String)sensordata.bosch_hum +  " %\n";
+		if(jConfig["SensorBosch"]["type"] == "bme680") {
+			values += "bosch_gas|div|" + (String)(sensordata.bosch_gas / 1000) +  " kOhm\n";
+			values += "bosch_iaq|div|" + (String)sensordata.bosch_iaq +  " \n";
+		}
 	}
 	if(jConfig["SensorMHZ19"]["active"] == 1) {
 	values += "mhz19_ppm|div|" + (String)sensordata.mhz19_ppm +  " ppm\n";
