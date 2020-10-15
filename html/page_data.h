@@ -133,7 +133,7 @@ void send_data_vals() {
 		values += "bosch_pres|div|" + (String)(sensordata.bosch_pres_sea/100) +  " hPa\n";
 		values += "bosch_hum|div|" + (String)sensordata.bosch_hum +  " %\n";
 		if(jConfig["SensorBosch"]["type"] == "bme680") {
-			values += "bosch_gas|div|" + (String)(sensordata.bosch_gas / 1000) +  " kOhm\n";
+			values += "bosch_gas|div|" + (String)(sensordata.bosch_gas) +  " Ohm\n";
 			values += "bosch_iaq|div|" + (String)sensordata.bosch_iaq +  " \n";
 		}
 	}

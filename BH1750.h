@@ -17,8 +17,4 @@ void setupBH1750() {
 
 void readBH1750(sensors *data) {
   data->bh1750_light = lightMeter.readLightLevel();
-  StaticJsonDocument<200> sBH1750;
-  sBH1750["light"] = jConfig["bh1750"]["name"];
-  sBH1750["light"] = data->bh1750_light;
-  networkdata["bh1750"] = sBH1750;
 }

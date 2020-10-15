@@ -20,6 +20,7 @@ const char PAGE_HELLO_TOP[] PROGMEM = R"=====(<html>
 
 const char PAGE_HELLO_BOTTOM[] PROGMEM = R"=====(
 <a href="/update" style="width:250px" class="btn btn--m btn--blue">Firmewareupdate</a><br>
+<a href="/info.html" style="width:250px" class="btn btn--m btn--blue">Info</a><br>
 <a href="/reboot" style="width:250px" class="btn btn--m btn--blue">Reboot</a><br>
 </body>
 </html>

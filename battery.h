@@ -3,5 +3,5 @@ void read_battery(sensors *data) {
   float val =raw/1023;
   val =BATTERY_FULL*val;
   data->battery = val;
-  networkdata["battery"] = data->battery;
+  
 }

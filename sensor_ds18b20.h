@@ -19,8 +19,4 @@ void read_ds18b20(sensors *data) {
     ds18b20.requestTemperatures();
     data->ds18b20_temp = ds18b20.getTempC(ds18b20_adr);
     data->ds18b20_temp -= jConfig["ds18b20"]["temp_offset"].as<float>();
-    StaticJsonDocument<200> sensords18b20;
-    sensords18b20["name"] = jConfig["ds18b20"]["name"].as<String>();
-    sensords18b20["temp"] = data->ds18b20_temp;
-    networkdata["ds18b20"] = sensords18b20;
 }

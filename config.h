@@ -13,6 +13,7 @@
 #define SENSOR_BOSCH "bme280";
 #define BOSCH_TEMPERATURE_OFFSET 0    //minus if measured temperature is HIGHER than reference temp, plus if its LOWER
 #define ALTITUDE 55.0;
+#define MAX_GAS_PATH "config/maxgas.cfg"
 
 #define SSD1306
 #define SHOWTIME 2000;

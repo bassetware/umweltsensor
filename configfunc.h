@@ -1,22 +1,26 @@
 //Configuration
-#define CONF_VERSION "2.2.0"
+#define CONF_VERSION "2.2.4"
 
-#include <FS.h>
+//#include <FS.h>
+#include "LittleFS.h"
 StaticJsonDocument<2048> jConfig;
+StaticJsonDocument<2048> doc_new;
 // Config
 
 void updateConfig() {
-  SPIFFS.remove(CONFIG_PATH);
-  File configFile = SPIFFS.open(CONFIG_PATH, "w");
+  
+  LittleFS.remove(CONFIG_PATH);
+  File configFile = LittleFS.open(CONFIG_PATH, "w");
   if (!configFile) {
     Serial.println(F("Failed to create file"));
     return;
   }
-  StaticJsonDocument<2048> doc_new;
+  
   
   doc_new["name"] = jConfig["name"] | AP_NAME;
   doc_new["altitude"] = jConfig["altitude"] | 0;
   doc_new["SleepTime"] = jConfig["SleepTime"] | SLEEPTIME;
+  doc_new["readTime"] = jConfig["readTime"] | 10;
   doc_new["powermode"] = jConfig["powermode"] | "sleep";
   doc_new["battery"] = jConfig["battery"] | 0;
   
@@ -59,6 +63,11 @@ void updateConfig() {
   doc_sensorBosch["name"] = jConfig["SensorBosch"]["name"] | SENSOR_BOSCH;
   doc_sensorBosch["type"] = jConfig["SensorBosch"]["type"] | SENSOR_BOSCH;
   doc_sensorBosch["temp_offset"] = jConfig["SensorBosch"]["temp_offset"] | 0;
+  //doc_sensorBosch["bme680_gas_100"] = jConfig["SensorBosch"]["bme680_gas_100"] | 0; //Maximum resistance value measured at clean air.
+  doc_sensorBosch["bme680_gas_zeroscore"] = jConfig["SensorBosch"]["bme680_gas_zeroscore"] | 0.2; //factor for zero score value
+  doc_sensorBosch["bme680_hum_100"] = jConfig["SensorBosch"]["bme680_hum_100"] | 0.45; //optimal humidity
+  doc_sensorBosch["bme680_temp_100"] = jConfig["SensorBosch"]["bme680_temp_100"] | 21; //optimal temperature
+
   doc_new["SensorBosch"] = doc_sensorBosch;
   
   StaticJsonDocument<100> doc_mhz19;
@@ -82,7 +91,7 @@ void updateConfig() {
 
   StaticJsonDocument<100> doc_ds18b20;
   doc_ds18b20["active"] = jConfig["ds18b20"]["active"] | 0;
-  doc_ds18b20["name"] = jConfig["ds18b20"]["name"] | SENSOR_BH1750;
+  doc_ds18b20["name"] = jConfig["ds18b20"]["name"] | SENSOR_DS18B20;
   doc_ds18b20["temp_offset"] = jConfig["ds18b20"]["temp_offset"] | 0;
   doc_new["ds18b20"] = doc_ds18b20; 
 
@@ -96,37 +105,42 @@ void updateConfig() {
     Serial.println(F("Failed to write to file"));
   }
   configFile.close();
-  jConfig = doc_new;
+  //jConfig = doc_new;
   Serial.println("Update Done");
+  ESP.restart();
 }
 int loadConfig() {
   int errcode = 0;
-  File configFile = SPIFFS.open(CONFIG_PATH, "r");
+  File configFile = LittleFS.open(CONFIG_PATH, "r");
   if (!configFile) {
     Serial.println("Failed to open config file");
     Serial.println("Using Standard values");
     errcode = 1;
   }
+  else {
+    DeserializationError error = deserializeJson(jConfig, configFile);
+    Serial.println("");
+    Serial.println(error.c_str());
+    Serial.println("config found: ");
+    serializeJsonPretty(jConfig, Serial);
+    Serial.println();
+    Serial.println();
   
-  DeserializationError error = deserializeJson(jConfig, configFile);
-  Serial.println("");
-  Serial.println("config found: ");
-  serializeJsonPretty(jConfig, Serial);
-  Serial.println();
-  Serial.println();
-  if(error) {
-    Serial.println(F("Failed to read file, using default configuration"));
-    Serial.println("Using Standard values");
-    errcode = 2;
-  }
-  //read out the config.
-  if(jConfig["SYSTEM_DONT_CHANGE"]["version"] != CONF_VERSION) {
-    Serial.println("Wrong config version found.");
-    Serial.println("updating config");
-    errcode = 3;
+    if(error) {
+      Serial.println(F("Failed to read file, using default configuration"));
+      Serial.println("Using Standard values");
+      errcode = 2;
+    }
+    //read out the config.
+    if(jConfig["SYSTEM_DONT_CHANGE"]["version"] != CONF_VERSION) {
+      Serial.println("Wrong config version found.");
+      Serial.println("updating config");
+      errcode = 3;
+    }
   }
   //
   configFile.close();
+
   if(errcode > 0) {
     //saveConfig();
     updateConfig();

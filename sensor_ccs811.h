@@ -39,10 +39,4 @@ void readccs811(sensors *data) {
       data->ccs811_tvoc = 0;
     }
   }
-  StaticJsonDocument<200> sensorccs811;
-  sensorccs811["name"] = jConfig["ccs811"]["name"];
-  sensorccs811["CO2"] = data->ccs811_co2;
-  sensorccs811["TVOC"] = data->ccs811_tvoc;
-  sensorccs811["fail_state"] = !ccs811_active;
-  networkdata["ccs811"] = sensorccs811;
 }
