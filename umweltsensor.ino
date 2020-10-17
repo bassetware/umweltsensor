@@ -16,6 +16,7 @@ typedef struct sensors {
   float bosch_pres;
   float bosch_pres_sea;
   float bosch_gas;
+  float bosch_clean_air;
   float bosch_iaq;
   float battery;
   float mhz19_ppm;
@@ -30,7 +31,7 @@ typedef struct sensors {
 sensors sensordata;
 int config_err;
 boolean configMode;
-#include "networkfuncs.h"
+
 
 #include "sensor_bme280.h"
 #include "sensor_ccs811.h"
@@ -40,7 +41,7 @@ sensorMHZ19 mhz(CO2,CO2LIMIT);
 #include "battery.h"
 #include "BH1750.h"
 #include "sensor_ds18b20.h"
-
+#include "networkfuncs.h"
 
 
 void JSONdata(sensors *data) {

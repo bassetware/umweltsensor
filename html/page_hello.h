@@ -1,11 +1,13 @@
 #ifndef PAGE_HELLO_H
 #define PAGE_HELLO_H
 
-#ifdef SENSOR_MHZ19
 const char PAGE_HELLO_MHZ[] PROGMEM = R"====(
 <a href="/mode.html" style="width:250px" class="btn btn--m btn--blue">MHZ-19 Kalibration</a><br>
 )====";
-#endif
+
+const char PAGE_HELLO_BME680[] PROGMEM = R"====(
+<a href="/bme680reset.html" style="width:250px" class="btn btn--m btn--blue">BME680: Reset Maximum Gas</a><br>
+)====";
 
 const char PAGE_HELLO_TOP[] PROGMEM = R"=====(<html>
 <html>
@@ -38,11 +40,12 @@ void send_hello_html() {
   int szHelloBotton = sizeof(PAGE_HELLO_BOTTOM);
   p_size += szHelloBotton;
   
-  #ifdef SENSOR_MHZ19
   int szMHZ = sizeof(PAGE_HELLO_MHZ);
   p_size += szMHZ;
-  
-  #endif
+
+  int szBME = sizeof(PAGE_HELLO_BME680);
+  p_size += szBME;
+
   int buffer_point = 0;
   char *buffer = (char*)malloc(p_size);
   
@@ -52,10 +55,11 @@ void send_hello_html() {
   memcpy_P(buffer + buffer_point, PAGE_HELLO_TOP, szHelloTop);
   buffer_point = buffer_point + szHelloTop - 1;
   
-  #ifdef SENSOR_MHZ19
   memcpy_P(buffer + buffer_point, PAGE_HELLO_MHZ, szMHZ);
   buffer_point = buffer_point + szMHZ - 1;
-  #endif
+
+  memcpy_P(buffer + buffer_point, PAGE_HELLO_BME680, szBME);
+  buffer_point = buffer_point + szBME - 1;
   
   memcpy_P(buffer + buffer_point, PAGE_HELLO_BOTTOM, szHelloBotton);
   

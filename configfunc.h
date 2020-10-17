@@ -143,6 +143,11 @@ int loadConfig() {
 
   if(errcode > 0) {
     //saveConfig();
+    if(errcode == 1) {
+      LittleFS.format();
+      LittleFS.end();
+      LittleFS.begin();
+    }
     updateConfig();
   }
   

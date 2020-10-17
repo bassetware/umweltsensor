@@ -84,6 +84,7 @@ void initWeb() {
 //
   web.on("/data.html", send_data_html);
   web.on("/scripts/data", send_data_vals);
+  web.on("/scripts/bosch_clean_air_reset", bosch_clean_air_reset);
 //  web.on("/scripts/config", send_config_vals);
 //
   web.on("/config.html", send_config_html);

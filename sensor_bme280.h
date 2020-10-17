@@ -41,10 +41,12 @@ void setupbosch() {
         LittleFS.remove(MAX_GAS_PATH);
         maxgas = LittleFS.open(MAX_GAS_PATH, "w");
         maxgas.print(bme680_maximum_gas);
+        maxgas.close();
       }
       else {
           String line = maxgas.readStringUntil('\n');
           bme680_maximum_gas = line.toFloat();
+          maxgas.close();
       }
     }
   }
@@ -58,7 +60,14 @@ float calcSeaLevel(float temp, float pres) {
   return pres * hightfactor;
 }
 
-float calcIAQ(float gas, float temp, float hum) {
+void reset_maximum_gas() {
+  LittleFS.remove(MAX_GAS_PATH);
+  File maxgas = LittleFS.open(MAX_GAS_PATH, "w");
+  maxgas.print(bme680_maximum_gas);
+  maxgas.close();
+}
+
+float calcIAQ(float gas, float temp, float hum, float cleanair) {
   //calc the score for the temp
   float humscore;
   float tempscore;
@@ -99,27 +108,17 @@ float calcIAQ(float gas, float temp, float hum) {
   If the new value is higher than the maximum gas value from the configuration then the gas value for calculation will be the maximum value
   If the new value is over 2 % higher than the maximum value from the configuration than the maximum value will be updated
   */
- if(gas > bme680_maximum_gas) {   
-    if((gas/bme680_maximum_gas) > 1.02) {
-      bme680_maximum_gas = gas;
-      LittleFS.remove(MAX_GAS_PATH);
-      File maxgas = LittleFS.open(MAX_GAS_PATH, "w");
-      maxgas.print(bme680_maximum_gas);
-    }
-    gasscore = 100;
- }
- else {
-   if(gas < (bme680_maximum_gas * jConfig["SensorBosch"]["bme680_gas_zeroscore"].as<float>())) {
-     gasscore = 0;
-   }
-   else {
-   float gas_offset = gas - (bme680_maximum_gas * jConfig["SensorBosch"]["bme680_gas_zeroscore"].as<float>());
-   range = bme680_maximum_gas - (bme680_maximum_gas * jConfig["SensorBosch"]["bme680_gas_zeroscore"].as<float>());
-   gasscore = (gas_offset / range) * 100;
-   }
- }
- //calculating the overall score
- float sumscore = (tempscore) + (humscore*2) + (gasscore * 7);
+
+  if(gas < (cleanair * jConfig["SensorBosch"]["bme680_gas_zeroscore"].as<float>())) {
+    gasscore = 0;
+  }
+  else {
+    float gas_offset = gas - (cleanair * jConfig["SensorBosch"]["bme680_gas_zeroscore"].as<float>());
+    range = cleanair - (cleanair * jConfig["SensorBosch"]["bme680_gas_zeroscore"].as<float>());
+    gasscore = (gas_offset / range) * 100;
+  }
+    //calculating the overall score
+float sumscore = (tempscore) + (humscore*2) + (gasscore * 7);
  sumscore /= 10;
  return sumscore;
 }
@@ -142,6 +141,18 @@ void readbosch(sensors *data) {
     data->bosch_gas = bme680.gas_resistance;
     bme680.performReading();
     data->bosch_gas = bme680.gas_resistance;
-    data->bosch_iaq = calcIAQ(data->bosch_gas, data->bosch_temp, data->bosch_hum);
+    if(data->bosch_gas > data->bosch_clean_air) {   
+      if((data->bosch_gas/data->bosch_clean_air) > 1.02) {
+        data->bosch_clean_air = data->bosch_gas;
+        LittleFS.remove(MAX_GAS_PATH);
+        File maxgas = LittleFS.open(MAX_GAS_PATH, "w");
+        maxgas.print(data->bosch_clean_air);
+        maxgas.close();
+      }
+      else {
+        data->bosch_gas = data->bosch_clean_air;
+      }
+    }
+    data->bosch_iaq = calcIAQ(data->bosch_gas, data->bosch_temp, data->bosch_hum, data->bosch_clean_air);
   }
 }

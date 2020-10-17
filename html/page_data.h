@@ -2,7 +2,7 @@
 #define PAGE_DATA_H
 
 const char PAGE_DATA_MHZ[] PROGMEM = R"====(
-<tr><td align='right'>CO<sub>2</sub> :</td><td><div id='mhz19_ppm'>N/A</div></td></tr>
+<tr><td align='right'>CO<sub>2</sub> :</td><td><div id='mhz19_ppm'>N/A</div></td><td><a href="/reset_bme680" style="width:250px" class="btn btn--m btn--blue">MHZ CO<sub>2</sub> Reset</a></td></tr>
 )====";
 
 const char PAGE_DATA_BME280[] PROGMEM = R"====(
@@ -15,7 +15,9 @@ const char PAGE_DATA_BME680[] PROGMEM = R"====(
 		<tr><td align='right'>Temperatur :</td><td><div id='bosch_temp'>N/A</div></td></tr>
 		<tr><td align='right'>Luftdruck :</td><td><div id='bosch_pres'>N/A</div></td></tr>
 		<tr><td align='right'>Luftfeuchtigkeit :</td><td><div id='bosch_hum'>N/A</div></td></tr>
-		<tr><td align='right'>Gas :</td><td><div id='bosch_gas'>N/A</div></td></tr>
+		<tr><td align='right'>Gas :</td><td><div id='bosch_gas'>N/A</div></td><td align='right'></td></tr>
+		<tr><td align='right'>Clean Air Value :</td><td><div id='bosch_clean_air'>N/A</div></td><td align='right'></td></tr>
+		<tr><td><td align='right'>Reset Maximum Gasvalue :</td><button onclick="setValues('/scripts/bosch_clean_air_reset')">Reset BME 680</button></td></tr>
 		<tr><td align='right'>IAQ :</td><td><div id='bosch_iaq'>N/A</div></td></tr>
 )====";
 
@@ -27,6 +29,8 @@ const char PAGE_DATA_CCS811[] PROGMEM = R"====(
 const char PAGE_DATA_BH1750[] PROGMEM = R"====(
 <tr><td align='right'>Lichtstärke :</td><td><div id='bh1750_light'>N/A</div></td></tr>
 )====";
+
+
 const char PAGE_DATA_TOP[] PROGMEM = R"=====(<html>
 	<head>
 	</head>
@@ -51,7 +55,13 @@ const char PAGE_DATA_BOTTOM[] PROGMEM = R"=====(
 	</html>
 )=====";
 
-
+void bosch_clean_air_reset() {
+	sensordata.bosch_clean_air = 0;
+	reset_maximum_gas();
+	String response;
+	response += "bosch_clean_air|div|" + (String)sensordata.bosch_clean_air +  " Ohm\n";
+	web.send(200, PTYPE_PLAIN, response);
+}
 
 
 void send_data_html() {
@@ -71,8 +81,10 @@ void send_data_html() {
   }
   
   if(jConfig["SensorBosch"]["active"] == 1) {
-	  if(jConfig["SensorBosch"]["type"] == "bme280") {p_size += sizeof(PAGE_DATA_BME280);}
-	  if(jConfig["SensorBosch"]["type"] == "bme680") {p_size += sizeof(PAGE_DATA_BME680);}
+		if(jConfig["SensorBosch"]["type"] == "bme280") {p_size += sizeof(PAGE_DATA_BME280);}
+		if(jConfig["SensorBosch"]["type"] == "bme680") {
+			p_size += sizeof(PAGE_DATA_BME680);
+		}
   }
   
   if(jConfig["SensorBH1750"]["active"] == 1) {
@@ -134,6 +146,7 @@ void send_data_vals() {
 		values += "bosch_hum|div|" + (String)sensordata.bosch_hum +  " %\n";
 		if(jConfig["SensorBosch"]["type"] == "bme680") {
 			values += "bosch_gas|div|" + (String)(sensordata.bosch_gas) +  " Ohm\n";
+			values += "bosch_clean_air|div|" + (String)sensordata.bosch_clean_air +  " Ohm\n";
 			values += "bosch_iaq|div|" + (String)sensordata.bosch_iaq +  " \n";
 		}
 	}
