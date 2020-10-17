@@ -37,16 +37,18 @@ void setupbosch() {
       bme680.setGasHeater(320, 150); // 320*C for 150 ms
       File maxgas = SPIFFS.open(MAX_GAS_PATH, "r");
       if(!maxgas) { //if file does not exist create a new one
-        bme680_maximum_gas = 0;
+        sensordata.bosch_clean_air = 0;
         SPIFFS.remove(MAX_GAS_PATH);
         maxgas = SPIFFS.open(MAX_GAS_PATH, "w");
-        maxgas.print(bme680_maximum_gas);
+        maxgas.print(sensordata.bosch_clean_air);
         maxgas.close();
       }
       else {
           String line = maxgas.readStringUntil('\n');
-          bme680_maximum_gas = line.toFloat();
+          sensordata.bosch_clean_air = line.toFloat();
           maxgas.close();
+
+
       }
     }
   }
@@ -78,6 +80,7 @@ float calcIAQ(float gas, float temp, float hum, float cleanair) {
   float range;
   if(hum <= (jConfig["SensorBosch"]["bme680_hum_100"].as<float>() + 5) && hum >= (jConfig["SensorBosch"]["bme680_hum_100"].as<float>() - 5)) {
     humscore = 100;
+    Serial.println("best")
   }
   else if(hum > (jConfig["SensorBosch"]["bme680_hum_100"].as<float>() + 5)) {
     float hum_offset = hum - (jConfig["SensorBosch"]["bme680_hum_100"].as<float>() + 5);
