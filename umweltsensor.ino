@@ -53,7 +53,7 @@ void JSONdata(sensors *data) {
 
 
 void initSystem() {
-  if (!LittleFS.begin()) {
+  if (!SPIFFS.begin()) {
     Serial.println("Failed to mount file system");
   }
   config_err = loadConfig();
@@ -102,6 +102,8 @@ String readSensors() {
     SensorBosch["pres_sea"] = sensordata.bosch_pres_sea;
     if(jConfig["SensorBosch"]["type"].as<String>() == "bme680") {
       SensorBosch["gas"] = sensordata.bosch_gas;
+      SensorBosch["clean_air"] = sensordata.bosch_clean_air;
+      SensorBosch["iaq"] = sensordata.bosch_iaq;
     }
     SensorBosch["fail_state"] = !bosch_active;
     networkdata["bosch"] = SensorBosch;

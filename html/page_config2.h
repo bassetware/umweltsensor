@@ -46,7 +46,7 @@ const char PAGE_CONFIG_BOTTOM[] PROGMEM = R"=====(
 				DeserializationError error = deserializeJson(doc_html, token);
 				//Serial.println(error);
 				config = String(token);
-				File configFile = LittleFS.open(CONFIG_PATH, "w");
+				File configFile = SPIFFS.open(CONFIG_PATH, "w");
 				if (!serializeJson(doc_html, configFile)) {
 					Serial.println(F("Failed to write to file"));
 				}
@@ -55,7 +55,7 @@ const char PAGE_CONFIG_BOTTOM[] PROGMEM = R"=====(
 			}
 		}
 	} 
-	File configFile = LittleFS.open(CONFIG_PATH, "r");
+	File configFile = SPIFFS.open(CONFIG_PATH, "r");
 	if (!configFile) {
 		Serial.println("Failed to open config file");
 		Serial.println("Using Standard values");
@@ -89,7 +89,7 @@ void send_config_html() {
 				
 				DeserializationError error = deserializeJson(html_config, token);
 				//Serial.println(error);
-				File configFile = LittleFS.open(CONFIG_PATH, "w");
+				File configFile = SPIFFS.open(CONFIG_PATH, "w");
 				if (!serializeJson(html_config, configFile)) {
 					Serial.println(F("Failed to write to file"));
 				}
@@ -98,7 +98,7 @@ void send_config_html() {
 		}
 	} 
 	String config;
-	File configFile = LittleFS.open(CONFIG_PATH, "r");
+	File configFile = SPIFFS.open(CONFIG_PATH, "r");
 	if (!configFile) {
 		Serial.println("Failed to open config file");
 		Serial.println("Using Standard values");

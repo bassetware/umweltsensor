@@ -35,11 +35,11 @@ void setupbosch() {
       bme680.setPressureOversampling(BME680_OS_4X);
       bme680.setIIRFilterSize(BME680_FILTER_SIZE_3);
       bme680.setGasHeater(320, 150); // 320*C for 150 ms
-      File maxgas = LittleFS.open(MAX_GAS_PATH, "r");
+      File maxgas = SPIFFS.open(MAX_GAS_PATH, "r");
       if(!maxgas) { //if file does not exist create a new one
         bme680_maximum_gas = 0;
-        LittleFS.remove(MAX_GAS_PATH);
-        maxgas = LittleFS.open(MAX_GAS_PATH, "w");
+        SPIFFS.remove(MAX_GAS_PATH);
+        maxgas = SPIFFS.open(MAX_GAS_PATH, "w");
         maxgas.print(bme680_maximum_gas);
         maxgas.close();
       }
@@ -61,14 +61,17 @@ float calcSeaLevel(float temp, float pres) {
 }
 
 void reset_maximum_gas() {
-  LittleFS.remove(MAX_GAS_PATH);
-  File maxgas = LittleFS.open(MAX_GAS_PATH, "w");
+  SPIFFS.remove(MAX_GAS_PATH);
+  File maxgas = SPIFFS.open(MAX_GAS_PATH, "w");
   maxgas.print(bme680_maximum_gas);
   maxgas.close();
 }
 
 float calcIAQ(float gas, float temp, float hum, float cleanair) {
   //calc the score for the temp
+  Serial.println(gas);
+  Serial.println(hum);
+  Serial.println(temp);
   float humscore;
   float tempscore;
   float gasscore;
@@ -86,7 +89,7 @@ float calcIAQ(float gas, float temp, float hum, float cleanair) {
     range = jConfig["SensorBosch"]["bme680_hum_100"].as<float>() - 5;
     float humscore = (hum_offset / range) * 100;
   }
-
+  Serial.println(humscore);
   //calculating the score of the temperature
   //giving a 1 degree delta
   if(temp <= (jConfig["SensorBosch"]["bme680_temp_100"].as<float>() + 1) && temp >= (jConfig["SensorBosch"]["bme680_temp_100"].as<float>() - 1)) {
@@ -144,8 +147,8 @@ void readbosch(sensors *data) {
     if(data->bosch_gas > data->bosch_clean_air) {   
       if((data->bosch_gas/data->bosch_clean_air) > 1.02) {
         data->bosch_clean_air = data->bosch_gas;
-        LittleFS.remove(MAX_GAS_PATH);
-        File maxgas = LittleFS.open(MAX_GAS_PATH, "w");
+        SPIFFS.remove(MAX_GAS_PATH);
+        File maxgas = SPIFFS.open(MAX_GAS_PATH, "w");
         maxgas.print(data->bosch_clean_air);
         maxgas.close();
       }

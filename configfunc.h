@@ -1,16 +1,17 @@
 //Configuration
 #define CONF_VERSION "2.2.4"
 
-//#include <FS.h>
-#include "LittleFS.h"
+#include <FS.h>
+//#include "LittleFS.h"
 StaticJsonDocument<2048> jConfig;
 StaticJsonDocument<2048> doc_new;
 // Config
 
 void updateConfig() {
-  
-  LittleFS.remove(CONFIG_PATH);
-  File configFile = LittleFS.open(CONFIG_PATH, "w");
+  Serial.print("Config Update to Version ");
+  Serial.println(CONF_VERSION);
+  SPIFFS.remove(CONFIG_PATH);
+  File configFile = SPIFFS.open(CONFIG_PATH, "w");
   if (!configFile) {
     Serial.println(F("Failed to create file"));
     return;
@@ -111,7 +112,7 @@ void updateConfig() {
 }
 int loadConfig() {
   int errcode = 0;
-  File configFile = LittleFS.open(CONFIG_PATH, "r");
+  File configFile = SPIFFS.open(CONFIG_PATH, "r");
   if (!configFile) {
     Serial.println("Failed to open config file");
     Serial.println("Using Standard values");
@@ -144,9 +145,10 @@ int loadConfig() {
   if(errcode > 0) {
     //saveConfig();
     if(errcode == 1) {
-      LittleFS.format();
-      LittleFS.end();
-      LittleFS.begin();
+      Serial.println("Format FS");
+      SPIFFS.format();
+      SPIFFS.end();
+      SPIFFS.begin();
     }
     updateConfig();
   }
