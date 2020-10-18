@@ -47,8 +47,7 @@ void setupbosch() {
           String line = maxgas.readStringUntil('\n');
           sensordata.bosch_clean_air = line.toFloat();
           maxgas.close();
-
-
+          maxgas.print(sensordata.bosch_clean_air);
       }
     }
   }
@@ -71,44 +70,53 @@ void reset_maximum_gas() {
 
 float calcIAQ(float gas, float temp, float hum, float cleanair) {
   //calc the score for the temp
-  Serial.println(gas);
-  Serial.println(hum);
-  Serial.println(temp);
   float humscore;
   float tempscore;
   float gasscore;
   float range;
+  Serial.print("hum:");Serial.println(hum);
   if(hum <= (jConfig["SensorBosch"]["bme680_hum_100"].as<float>() + 5) && hum >= (jConfig["SensorBosch"]["bme680_hum_100"].as<float>() - 5)) {
     humscore = 100;
-    Serial.println("best")
+    Serial.println("best");
   }
   else if(hum > (jConfig["SensorBosch"]["bme680_hum_100"].as<float>() + 5)) {
+    Serial.println("hum is bigger");
     float hum_offset = hum - (jConfig["SensorBosch"]["bme680_hum_100"].as<float>() + 5);
+    Serial.println(hum_offset);
     range = 100 - (jConfig["SensorBosch"]["bme680_hum_100"].as<float>() + 5);
-    float humscore = 100 - ((hum_offset / range)*100);
+    Serial.println(range);
+    humscore = 100 - ((hum_offset/range) * 100);
   }
   else if(hum < (jConfig["SensorBosch"]["bme680_hum_100"].as<float>() - 5)) {
+    Serial.println("hum is smaller");
     float hum_offset = hum - (jConfig["SensorBosch"]["bme680_hum_100"].as<float>() - 5);
     range = jConfig["SensorBosch"]["bme680_hum_100"].as<float>() - 5;
-    float humscore = (hum_offset / range) * 100;
+    humscore = (hum_offset / range) * 100;
   }
-  Serial.println(humscore);
+  Serial.print("Humscore ");Serial.println(humscore);
   //calculating the score of the temperature
   //giving a 1 degree delta
   if(temp <= (jConfig["SensorBosch"]["bme680_temp_100"].as<float>() + 1) && temp >= (jConfig["SensorBosch"]["bme680_temp_100"].as<float>() - 1)) {
     tempscore = 100;
+    Serial.println("best");
   }
   else if(temp > (jConfig["SensorBosch"]["bme680_temp_100"].as<float>() + 1)) {
+    Serial.println("temp is higher");
     float temp_offset = temp - (jConfig["SensorBosch"]["bme680_temp_100"].as<float>() + 1);
+    Serial.println(temp_offset);
     range = (jConfig["SensorBosch"]["bme680_temp_100"].as<float>() + 15) - (jConfig["SensorBosch"]["bme680_temp_100"].as<float>() + 1);
-    float score = 100 - ((temp_offset / range)*100);
+    Serial.println(range);
+    tempscore = 100 - ((temp_offset / range)*100);
   }
   else if(temp < (jConfig["SensorBosch"]["bme680_temp_100"].as<float>() - 1)) {
+    Serial.println("temp is lower");
     float temp_offset = temp - (jConfig["SensorBosch"]["bme680_temp_100"].as<float>() - 1);
+    Serial.println(temp_offset);
     range = (jConfig["SensorBosch"]["bme680_temp_100"].as<float>() - 1) - (jConfig["SensorBosch"]["bme680_temp_100"].as<float>() -15);
-    float score = (temp_offset / range) * 100;
+    Serial.println(range);
+    tempscore = (temp_offset / range) * 100;
   }
-
+  Serial.print("Tempscore ");Serial.println(tempscore);
   /*Calculating the gas score
   First step check the gas value:
   If the new value is higher than the maximum gas value from the configuration then the gas value for calculation will be the maximum value
@@ -123,6 +131,7 @@ float calcIAQ(float gas, float temp, float hum, float cleanair) {
     range = cleanair - (cleanair * jConfig["SensorBosch"]["bme680_gas_zeroscore"].as<float>());
     gasscore = (gas_offset / range) * 100;
   }
+  Serial.print("Gasscore ");Serial.println(gasscore);
     //calculating the overall score
 float sumscore = (tempscore) + (humscore*2) + (gasscore * 7);
  sumscore /= 10;

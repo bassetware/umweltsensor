@@ -17,7 +17,7 @@ const char PAGE_DATA_BME680[] PROGMEM = R"====(
 		<tr><td align='right'>Luftfeuchtigkeit :</td><td><div id='bosch_hum'>N/A</div></td></tr>
 		<tr><td align='right'>Gas :</td><td><div id='bosch_gas'>N/A</div></td><td align='right'></td></tr>
 		<tr><td align='right'>Clean Air Value :</td><td><div id='bosch_clean_air'>N/A</div></td><td align='right'></td></tr>
-		<tr><td align='right'>Reset Clean Air:</td><td align='right'><button onclick="setValues('/scripts/bosch_clean_air_reset')">Reset BME 680</button></td></tr>
+		<tr><td align='right'>Reset Clean Air:</td><td><button onclick="setValues('/scripts/bosch_clean_air_reset')">Reset BME 680</button></td></tr>
 		<tr><td align='right'>IAQ :</td><td><div id='bosch_iaq'>N/A</div></td></tr>
 )====";
 

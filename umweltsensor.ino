@@ -177,12 +177,12 @@ void setup() {
     Serial.println("Freshly flashed Firmeware detected");
     Serial.println("Open AP for Configuration");
     jConfig["SYSTEM_DONT_CHANGE"]["firstboot"] = 0;
-    updateConfig();
+    //updateConfig();
     configMode = true;
   }
 
   boolean showDataonOled = !(jConfig["oled"]["show_on_double_reset"].as<bool>() ^ doublereset);
-  Serial.println(showDataonOled);
+  //Serial.println(showDataonOled);
   if(jConfig["oled"]["active"] == 1) {
     if(!configMode) {
       if(showDataonOled) {simplemessage("Sensoren\nauslesen",true,2);}
