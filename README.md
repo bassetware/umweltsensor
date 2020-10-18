@@ -32,3 +32,26 @@ The configuration is stored inside the SPIFF of the ESP8266. It can be edited wh
 
  ### Configuration modes
  yet to come.
+ 
+ ### IAQ-calculation (Indoor air quality)
+ IAQ Calculation is modified from the @G6EJD [(Sample Code)](https://github.com/G6EJD/BME680-Example).
+ The IAQ is basically a sccore from 0 - 100. Where 100 is the beste score. 
+ Every value used for the IAQ calculation has an optimum value. These optimum values can be changed inside the configuration. (Bosch section) A weighted average value is calculated from these score. The weightings are: 10 Percent for the temperature, 20 percent for the humidity and 70 percent for the gas value. 
+ ```
+    "bme680_gas_zeroscore": 0.2,
+    "bme680_hum_100": 45,
+    "bme680_temp_100": 21
+ ```
+ Standard values are shown obove. A 
+ The humidity has a range of 5 percent over and under the optimal value where the score is 100.
+ Same applies to the temperature, where the range is 1 °C over and under the optimal value. 
+ Thee gas-sensor is a little bit difficult to calculate, as the the sensor deliviers different values depending on almost everything. :grimacing: Hence the intervall between measurments and the settings inside the sensor have to be held constant. 
+ Basically  a resistance is read out. This resistance will increase if the air is less polluted. To get a score, the sensor reads out the resistance and it to a maximum resistance level found prior to the measurment (clean air value). `"bme680_gas_zeroscore"` provides a facotor from the maximum resistance level, where the gas scoore becomes zero, when the actual resistance level gets below that value.
+ If the actial resistancce level gets higher than the prior found maximum, it is stored as the new maximum.
+ To get proppoer values I suggest the following procedure:
+ 1. Open configuration interface
+ 2. Set your measurement parameters inside the configuration
+ 3. Go to data section and reset the Clean air value 
+ 4. Reboot your device and put it in a clean air environment (Basically I put it outside)
+ 5. Wait for 20 Minutes to let the sensor find the maximum value.
+ 6. Now your device should be able to determin a propper IAQ value. 
