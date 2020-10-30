@@ -35,7 +35,7 @@ The configuration is stored inside the SPIFF of the ESP8266. It can be edited wh
  
  ### IAQ-calculation (Indoor air quality)
  IAQ Calculation is modified from the @G6EJD [(Sample Code)](https://github.com/G6EJD/BME680-Example).
- The IAQ is basically a sccore from 0 - 100. Where 100 is the beste score. 
+ The IAQ is basically a sccore from 0 - 100, where 100 is the beste score. 
  Every value used for the IAQ calculation has an optimum value. These optimum values can be changed inside the configuration. (Bosch section) A weighted average value is calculated from these score. The weightings are: 10 Percent for the temperature, 20 percent for the humidity and 70 percent for the gas value. 
  ```
     "bme680_gas_zeroscore": 0.2,
